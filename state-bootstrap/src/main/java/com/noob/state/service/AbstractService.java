@@ -13,6 +13,7 @@ import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
 
 import com.google.common.base.Strings;
 import com.noob.state.constants.Symbol;
+import com.noob.state.entity.Meta;
 import com.noob.state.entity.adapter.Adapter;
 import com.noob.state.monitor.Monitor;
 import com.noob.state.monitor.MonitorFactory.EventSource;
@@ -93,8 +94,8 @@ public abstract class AbstractService {
 	 * @param map        节点本地缓存映射
 	 * @param cls        指定类型
 	 */
-	protected <T> void register(String path, String metaConfig, Map<String, Adapter<T>> map,
-			Class<T> cls) {
+	protected <T extends Meta> void register(String path, String metaConfig,
+			Map<String, Adapter<T>> map, Class<T> cls) {
 		if (Strings.isNullOrEmpty(metaConfig))
 			log.error("get node's meta data return null. path:{}", path);
 		else {
