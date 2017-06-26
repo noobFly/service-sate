@@ -1,7 +1,7 @@
 package com.noob.state.entity;
 
 import com.noob.state.constants.Symbol;
-import com.noob.state.utils.GsonUtil;
+import com.noob.state.util.GsonUtil;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

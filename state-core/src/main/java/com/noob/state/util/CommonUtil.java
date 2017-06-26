@@ -1,4 +1,4 @@
-package com.noob.state.utils;
+package com.noob.state.util;
 
 import java.util.Collection;
 import java.util.Optional;

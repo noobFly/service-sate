@@ -6,8 +6,8 @@ import java.util.Date;
 import com.noob.state.constants.Symbol;
 import com.noob.state.node.impl.LogNode;
 import com.noob.state.storage.BusinessStorage;
-import com.noob.state.utils.GsonUtil;
-import com.noob.state.utils.IpUtils;
+import com.noob.state.util.GsonUtil;
+import com.noob.state.util.IpUtils;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

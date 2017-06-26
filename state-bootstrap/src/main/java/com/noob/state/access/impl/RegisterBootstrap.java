@@ -17,8 +17,8 @@ import com.noob.state.node.impl.ServerNode;
 import com.noob.state.register.impl.ZookeeperConfiguration;
 import com.noob.state.register.storage.ServerInstance;
 import com.noob.state.storage.BusinessStorage;
+import com.noob.state.util.CommonUtil;
 import com.noob.state.util.MonitorUtil;
-import com.noob.state.utils.CommonUtil;
 
 import lombok.Getter;
 import lombok.Setter;

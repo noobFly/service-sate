@@ -8,7 +8,7 @@ import com.noob.state.entity.adapter.Adapter;
 import com.noob.state.monitor.Monitor;
 import com.noob.state.monitor.MonitorFactory.EventSource;
 import com.noob.state.monitor.MonitorFactory.MonitorContainer;
-import com.noob.state.utils.CommonUtil;
+import com.noob.state.util.CommonUtil;
 
 import java.util.Iterator;
 import java.util.List;

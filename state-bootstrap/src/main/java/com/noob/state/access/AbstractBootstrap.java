@@ -13,8 +13,8 @@ import com.noob.state.service.impl.ProviderService;
 import com.noob.state.service.impl.ServerService;
 import com.noob.state.service.manager.ServiceManager;
 import com.noob.state.storage.BusinessStorage;
-import com.noob.state.utils.CommonUtil;
-import com.noob.state.utils.GsonUtil;
+import com.noob.state.util.CommonUtil;
+import com.noob.state.util.GsonUtil;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

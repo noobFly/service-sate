@@ -1,7 +1,7 @@
 package com.noob.state.register.storage;
 
 import com.noob.state.constants.Symbol;
-import com.noob.state.utils.IpUtils;
+import com.noob.state.util.IpUtils;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
