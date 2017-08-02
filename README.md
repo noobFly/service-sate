@@ -1,6 +1,6 @@
 # service-sate
 
-入口：
+入口：<br>
     1、RegisterBootstrap:  节点树初始化; 同步节点状态.   注册SyncDataListener.
     2、ObserverBootstrap:  同步节点状态.    注册SyncDataListener.
     3、ControllerBootstrap: 
