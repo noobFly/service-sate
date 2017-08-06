@@ -4,6 +4,7 @@ import java.util.Map;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.noob.state.entity.Api;
@@ -34,7 +35,7 @@ public class BusinessStorage extends NodeStorage {
 	 * <providerFullPath, apiFullPath>
 	 */
 	@Getter
-	private final Multimap<String, String> relationMap = ArrayListMultimap.create();
+	private final Multimap<String, String> relationMap = HashMultimap.create();
 
 	public BusinessStorage(ICoordinatorRegistryCenter regCenter, String root) {
 		super(regCenter, root);
