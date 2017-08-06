@@ -74,7 +74,7 @@ public class ServiceManager {
 	}
 
 	/**
-	 * 新注册 带meta节点
+	 * 新注册 带meta节点 （因为在注册时先注册了log节点再注册meta节点，保证在注册新节点时日志一定能写入log data）
 	 */
 	public void registerNew(String metaPath, String metaData) {
 		PathAndNode pathAndNode = ZKPaths.getPathAndNode(metaPath);

@@ -1,10 +1,10 @@
 # service-sate
 
 #入口：<br>
-    1、RegisterBootstrap:  节点树初始化; 同步节点状态.   注册SyncDataListener. <br>
-    2、ObserverBootstrap:  同步节点状态.    注册SyncDataListener. <br>
+    1、RegisterBootstrap:  节点树初始化; 同步节点状态.   注册SyncListener. <br>
+    2、ObserverBootstrap:  同步节点状态.    注册SyncListener. <br>
     3、ControllerBootstrap:  <br>
-             同步节点状态, 响应各层节点的变化, 调控下层节点的状态.  注册ToggleNodeListener和ServerChangeListener <br>
+             同步节点状态, 响应各层节点的变化, 调控下层节点的状态.  注册ToggleListener和ServerChangeListener <br>
 
 #节点： <br>
 level下实例节点state有优先级 #{MonitorFactory.EventSource} <br>
@@ -17,8 +17,8 @@ level下实例节点state有优先级 #{MonitorFactory.EventSource} <br>
 
 #监听： <br>
  TreeCacheListener:   监控TreeCache下节点树的变动 <br>
-           1、SyncDataListener:   新增事件 -> add新Map.Entry至本地缓存; 更新事件 -> modify本地缓存. <br>
-           2、ToggleNodeListener: 新增事件 -> add新Map.Entry至本地缓存; 更新事件 -> modify本地缓存, 变更状态向下传导. <br>
+           1、SyncListener:   新增事件 -> 新增状态标识至本地缓存;    更新事件 -> modify本地缓存. <br>
+           2、ToggleListener: 新增事件 -> 新增状态标识至本地缓存;    更新事件 -> modify本地缓存, 变更状态向下传导. <br>
  PathChildrenCacheListener： 监听指定节点下子节点列表的变动 <br>
            1、ServerChangeListener:  监听服务运行实例的存亡, 判定是否标记offline. <br>
  

@@ -14,7 +14,7 @@ import com.noob.state.node.impl.ApiNode;
 import com.noob.state.node.impl.MetaNode;
 import com.noob.state.service.AbstractService;
 import com.noob.state.util.CommonUtil;
-import com.noob.state.util.MonitorUtil;
+import com.noob.state.util.SateUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -60,7 +60,7 @@ public class ApiService extends AbstractService {
 	 */
 	public void updateCache(String path, String data) {
 		log.info("{} begin. path:{}, data:{}.", SERVICE_CACHE_TOPIC, path, data);
-		MonitorUtil.updateLocalCache(data, getServiceAdapters().get(path));
+		SateUtil.updateLocalCache(data, getServiceAdapters().get(path));
 
 	}
 

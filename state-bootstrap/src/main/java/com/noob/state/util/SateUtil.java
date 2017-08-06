@@ -14,7 +14,7 @@ import com.noob.state.monitor.Monitor;
 import com.noob.state.monitor.MonitorFactory.EventSource;
 import com.noob.state.monitor.MonitorFactory.MonitorContainer;
 
-public class MonitorUtil {
+public class SateUtil {
 
 	/**
 	 * 节点信息转换
@@ -104,7 +104,7 @@ public class MonitorUtil {
 	public static List<Monitor> splitToMonitorList(String info) {
 		List<String> infoList = split(info);
 
-		return CommonUtil.notEmpty(infoList) ? infoList.stream().map(MonitorUtil::convert)
+		return CommonUtil.notEmpty(infoList) ? infoList.stream().map(SateUtil::convert)
 				.distinct().filter(t -> t != null).collect(Collectors.toList()) : null;
 	}
 

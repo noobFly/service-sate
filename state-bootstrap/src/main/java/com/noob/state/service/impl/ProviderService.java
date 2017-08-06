@@ -13,7 +13,7 @@ import com.noob.state.monitor.MonitorFactory.MonitorContainer;
 import com.noob.state.node.impl.MetaNode;
 import com.noob.state.node.impl.ProviderNode;
 import com.noob.state.service.AbstractService;
-import com.noob.state.util.MonitorUtil;
+import com.noob.state.util.SateUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -39,7 +39,7 @@ public class ProviderService extends AbstractService {
 	 */
 	public void updateCache(String path, String data) {
 		log.info("{} begin. path:{}, data:{}.", PROVIDER_CACHE_TOPIC, path, data);
-		MonitorUtil.updateLocalCache(data, getProviderAdapters().get(path));
+		SateUtil.updateLocalCache(data, getProviderAdapters().get(path));
 
 	}
 
@@ -84,7 +84,7 @@ public class ProviderService extends AbstractService {
 	 */
 	public boolean isOffline() {
 		String data = storage.getData(ProviderNode.ROOT);
-		List<String> list = MonitorUtil.split(data);
+		List<String> list = SateUtil.split(data);
 		return list != null && list.stream()
 				.anyMatch(t -> t.equals(MonitorContainer.OFF_SERVER.getMonitor().toString()));
 	}
@@ -94,7 +94,7 @@ public class ProviderService extends AbstractService {
 	 */
 	public void turnOffline(LogService.LogInfo log) {
 		String remoteData = getRootRemoteData();
-		updateNodeData(remoteData, MonitorUtil.addSingleMonitor(remoteData,
+		updateNodeData(remoteData, SateUtil.addSingleMonitor(remoteData,
 				MonitorContainer.OFF_SERVER.getMonitor().toString()), log);
 
 	}
@@ -104,8 +104,8 @@ public class ProviderService extends AbstractService {
 	 */
 	public void turnOnline(LogService.LogInfo log) {
 		String remoteData = getRootRemoteData();
-		updateNodeData(remoteData, MonitorUtil.removeMonitor(remoteData,
-				MonitorUtil.greaterLevel(EventSource.PROVIDER_ALL)), log);
+		updateNodeData(remoteData, SateUtil.removeMonitor(remoteData,
+				SateUtil.greaterLevel(EventSource.PROVIDER_ALL)), log);
 
 	}
 
