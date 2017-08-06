@@ -9,10 +9,9 @@
 level下实例节点state有优先级 #{MonitorFactory.EventSource} <br>
      1、servers: 服务运行实例集合 <br>
      2、providers: 提供者标识集合 <br>
-                           state:  OFF@-@SERVER; DISABLED@-@PROVIDER_ALL; <br>
-                                LIMIT@-@PROVIDER_INSTANCE; DISABLED@-@PROVIDER_INSTANCE <br>
+                  `state`:  OFF@-@SERVER; DISABLED@-@PROVIDER_ALL;  LIMIT@-@PROVIDER_INSTANCE; DISABLED@-@PROVIDER_INSTANCE <br>
      3、apis: 服务借口标识集合 <br>
-                           state: LIMIT@-@API_INSTANCE;  DISABLED@-@API_INSTANCE <br>
+                   `state`: LIMIT@-@API_INSTANCE;  DISABLED@-@API_INSTANCE <br>
      4、log: 日志集合, 每天产生一个日期格式<2017-06-26>的子日志节点记录变动过程 <br>
 
 #监听： <br>
