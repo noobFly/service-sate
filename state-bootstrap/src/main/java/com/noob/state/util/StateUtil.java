@@ -14,7 +14,7 @@ import com.noob.state.monitor.Monitor;
 import com.noob.state.monitor.MonitorFactory.EventSource;
 import com.noob.state.monitor.MonitorFactory.MonitorContainer;
 
-public class SateUtil {
+public class StateUtil {
 
 	/**
 	 * 节点信息转换
@@ -35,9 +35,12 @@ public class SateUtil {
 	/**
 	 * 整理出哪些要更新 哪些要删除
 	 *
-	 * @param localData    本地信息
-	 * @param transferData 需要更新的信息
-	 * @param removeInfo   需要删除的信息
+	 * @param localData
+	 *            本地信息
+	 * @param transferData
+	 *            需要更新的信息
+	 * @param removeInfo
+	 *            需要删除的信息
 	 */
 	private static String exchange(String localData, String transferData, List<String> removeInfo) {
 		List<String> localList = split(localData);
@@ -104,7 +107,7 @@ public class SateUtil {
 	public static List<Monitor> splitToMonitorList(String info) {
 		List<String> infoList = split(info);
 
-		return CommonUtil.notEmpty(infoList) ? infoList.stream().map(SateUtil::convert)
+		return CommonUtil.notEmpty(infoList) ? infoList.stream().map(StateUtil::convert)
 				.distinct().filter(t -> t != null).collect(Collectors.toList()) : null;
 	}
 
@@ -117,30 +120,25 @@ public class SateUtil {
 	/**
 	 * 增加单个监控
 	 */
-	public static String addSingleMonitor(String localInfo, String addInfo) {
-		return Strings.isNullOrEmpty(localInfo) ? addInfo
-				: (localInfo.contains(addInfo) ? String.join(Symbol.SEMICOLON, localInfo, addInfo)
-						: null);
+	public static String addSingleMonitor(String localInfo, Monitor monitor) {
+		return Strings.isNullOrEmpty(localInfo) ? monitor.toString()
+				: (localInfo.contains(monitor.toString())
+						? String.join(Symbol.SEMICOLON, localInfo, monitor.toString()) : null);
 	}
 
 	/**
-	 * 删除指定状态
+	 * 删除单个监控
 	 */
-	public static String removeMonitor(String localInfo, List<String> removeMonitors) {
+	public static String removeSingleMonitor(String localInfo, Monitor monitor) {
 		if (Strings.isNullOrEmpty(localInfo)) return null;
 		List<String> localList = Splitter.on(Symbol.SEMICOLON).omitEmptyStrings()
 				.splitToList(localInfo).stream().distinct().collect(Collectors.toList());
 
+		String info = monitor.toString();
 		boolean remove = false;
-		for (String each : removeMonitors) {
-			if (localInfo.contains(each)) localList.remove(each);
-			if (!remove)
-				remove = true;
-			else {
-				continue;
-
-			}
-
+		if (localInfo.contains(info)) {
+			localList.remove(info);
+			remove = true;
 		}
 
 		return !remove ? null : String.join(Symbol.SEMICOLON, localList);
@@ -150,8 +148,10 @@ public class SateUtil {
 	/**
 	 * 更新本地状态
 	 *
-	 * @param data    新的状态信息
-	 * @param adapter 老的状态信息
+	 * @param data
+	 *            新的状态信息
+	 * @param adapter
+	 *            老的状态信息
 	 */
 	public static <T extends Meta> void updateLocalCache(String data, Adapter<T> adapter) {
 		if (adapter != null) {

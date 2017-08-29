@@ -10,11 +10,12 @@ import com.google.common.collect.Multimap;
 import com.noob.state.entity.Api;
 import com.noob.state.entity.adapter.Adapter;
 import com.noob.state.monitor.MonitorFactory.EventSource;
+import com.noob.state.monitor.MonitorFactory.MonitorContainer;
 import com.noob.state.node.impl.ApiNode;
 import com.noob.state.node.impl.MetaNode;
 import com.noob.state.service.AbstractService;
 import com.noob.state.util.CommonUtil;
-import com.noob.state.util.SateUtil;
+import com.noob.state.util.StateUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -60,7 +61,7 @@ public class ApiService extends AbstractService {
 	 */
 	public void updateCache(String path, String data) {
 		log.info("{} begin. path:{}, data:{}.", SERVICE_CACHE_TOPIC, path, data);
-		SateUtil.updateLocalCache(data, getServiceAdapters().get(path));
+		StateUtil.updateLocalCache(data, getServiceAdapters().get(path));
 
 	}
 
@@ -113,6 +114,22 @@ public class ApiService extends AbstractService {
 		registerWithConfig(storage.getFullPath(ApiNode.getInstancePath(providerNode, apiNode)),
 				storage.getData(metaNode.getApiInstancePath(providerNode, apiNode)));
 
+	}
+
+	/**
+	 * 禁用通道
+	 */
+	public void disabledApi(String providerCode, String apiCode, String logRemark) {
+		addMonitorForConsole(ApiNode.getInstancePath(providerCode, apiCode),
+				MonitorContainer.DIS_API_INSTANCE, logRemark);
+	}
+
+	/**
+	 * 启用通道
+	 */
+	public void enabledApi(String providerCode, String apiCode, String logRemark) {
+		removeMonitorForConsole(ApiNode.getInstancePath(providerCode, apiCode),
+				MonitorContainer.DIS_API_INSTANCE, logRemark);
 	}
 
 }

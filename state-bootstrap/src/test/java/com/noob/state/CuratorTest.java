@@ -4,8 +4,8 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import com.noob.state.access.impl.ControllerBootstrap;
-import com.noob.state.access.impl.RegisterBootstrap;
+import com.noob.state.bootstrap.impl.ControllerBootstrap;
+import com.noob.state.bootstrap.impl.RegisterBootstrap;
 import com.noob.state.entity.Api;
 import com.noob.state.entity.Provider;
 import com.noob.state.node.impl.ApiNode;

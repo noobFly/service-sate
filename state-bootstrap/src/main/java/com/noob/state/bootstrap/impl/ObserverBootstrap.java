@@ -1,6 +1,6 @@
-package com.noob.state.access.impl;
+package com.noob.state.bootstrap.impl;
 
-import com.noob.state.access.AbstractBootstrap;
+import com.noob.state.bootstrap.AbstractBootstrap;
 import com.noob.state.listener.SyncListener;
 import com.noob.state.register.impl.ZookeeperConfiguration;
 

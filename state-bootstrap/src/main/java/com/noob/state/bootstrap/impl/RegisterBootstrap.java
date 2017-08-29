@@ -1,9 +1,9 @@
-package com.noob.state.access.impl;
+package com.noob.state.bootstrap.impl;
 
 import java.util.List;
 
 import com.google.common.base.Strings;
-import com.noob.state.access.AbstractBootstrap;
+import com.noob.state.bootstrap.AbstractBootstrap;
 import com.noob.state.constants.Symbol;
 import com.noob.state.entity.Api;
 import com.noob.state.entity.Provider;
@@ -19,7 +19,7 @@ import com.noob.state.register.impl.ZookeeperConfiguration;
 import com.noob.state.register.storage.ServerInstance;
 import com.noob.state.storage.BusinessStorage;
 import com.noob.state.util.CommonUtil;
-import com.noob.state.util.SateUtil;
+import com.noob.state.util.StateUtil;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -94,7 +94,7 @@ public class RegisterBootstrap extends AbstractBootstrap {
                         log.info("register api_instance begin. path: 【{}】", apiInstancePath);
 
                         serviceManager.getApiService().initNode(apiInstancePath,
-                                SateUtil.join(providerAdapter.getMonitorList())); // 带上级监控状态创建实例
+                                StateUtil.join(providerAdapter.getMonitorList())); // 带上级监控状态创建实例
 
                         storage.createNodeIfNeeded(logNode.getApiInstancePath(providerNode, apiNode));
                         storage.fillNode(metaNode.getApiInstancePath(providerNode, apiNode), api.toJson());
@@ -145,6 +145,6 @@ public class RegisterBootstrap extends AbstractBootstrap {
     }
 
     private List<Monitor> generatorMonitor(BusinessStorage storage, String node) {
-        return SateUtil.splitToMonitorList(storage.getData(node));
+        return StateUtil.splitToMonitorList(storage.getData(node));
     }
 }

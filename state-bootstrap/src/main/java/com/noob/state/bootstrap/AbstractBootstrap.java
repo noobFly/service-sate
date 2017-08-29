@@ -1,7 +1,10 @@
-package com.noob.state.access;
+package com.noob.state.bootstrap;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+import com.noob.state.entity.Provider;
+import com.noob.state.entity.adapter.Adapter;
 import com.noob.state.listener.AbstractChildrenCacheListener;
 import com.noob.state.listener.AbstractTreeCacheListener;
 import com.noob.state.node.impl.ApiNode;
@@ -58,7 +61,6 @@ public abstract class AbstractBootstrap {
 		}*/
 	}
 
-
 	/**
 	 * 初始化cache
 	 */
@@ -75,12 +77,12 @@ public abstract class AbstractBootstrap {
 	protected void beforeListen() {
 
 	}
-	
+
 	/**
 	 * 监听之后初始化
 	 */
 	private void afterListen() {
-		
+
 	}
 
 	/**
@@ -100,7 +102,8 @@ public abstract class AbstractBootstrap {
 		if (CommonUtil.notEmpty(providerNodeList)) {
 			for (String providerNode : providerNodeList) {
 				serviceManager.getProviderService().register(providerNode);
-				List<String> apiNodeList = storage.getNodeChildrenKeys(ApiNode.getRootPath(providerNode)); // api
+				List<String> apiNodeList =
+						storage.getNodeChildrenKeys(ApiNode.getRootPath(providerNode)); // api
 				if (CommonUtil.notEmpty(apiNodeList)) {
 					for (String apiNode : apiNodeList) {
 						serviceManager.getApiService().register(providerNode, apiNode);
@@ -148,6 +151,14 @@ public abstract class AbstractBootstrap {
 	 */
 	public String getFullPath(String path) {
 		return storage.getFullPath(path);
+	}
+
+	/**
+	 * 获取所有通道的元配置
+	 */
+	public List<Provider> getChannelInfo() {
+		return storage.getProviderMap().values().stream().map(Adapter::getT)
+				.collect(Collectors.toList());
 	}
 
 }

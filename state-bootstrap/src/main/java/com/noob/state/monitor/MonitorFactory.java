@@ -105,7 +105,6 @@ public interface MonitorFactory {
 		 * 停用单个提供者
 		 */
 		DIS_PROVIDER_INSTANCE(bulider(EventType.DISABLED, EventSource.PROVIDER_INSTANCE), true),
-		
 
 		/************************* 服务实例 **********************************/
 		/**
@@ -126,6 +125,9 @@ public interface MonitorFactory {
 		DIS_API_INSTANCE(bulider(EventType.DISABLED, EventSource.API_INSTANCE), true);
 
 		private Monitor monitor;
+		/**
+		 * 只有display 为 true 的状态才会更新到节点上
+		 */
 		private boolean display;
 
 		private static Monitor bulider(EventType type, EventSource source) {
@@ -140,16 +142,12 @@ public interface MonitorFactory {
 			return list;
 		}
 
-		/**
-		 * 只有display 为 true 的状态才会更新到节点上
-		 */
 		public static List<String> getDisplayMonitor(EventSource source) {
 			List<String> result = null;
 			for (MonitorContainer each : MonitorContainer.values()) {
 				Monitor monitor = each.getMonitor();
 				if (each.display && monitor.getSource().equals(source.toString())) {
-					if (result == null)
-						result = Lists.newArrayList();
+					if (result == null) result = Lists.newArrayList();
 					result.add(monitor.toString());
 				}
 			}

@@ -17,118 +17,175 @@ import com.noob.state.entity.Meta;
 import com.noob.state.entity.adapter.Adapter;
 import com.noob.state.monitor.Monitor;
 import com.noob.state.monitor.MonitorFactory.EventSource;
+import com.noob.state.monitor.MonitorFactory.MonitorContainer;
 import com.noob.state.node.impl.MetaNode;
 import com.noob.state.service.impl.LogService;
 import com.noob.state.storage.BusinessStorage;
 import com.noob.state.util.CommonUtil;
 import com.noob.state.util.GsonUtil;
-import com.noob.state.util.SateUtil;
+import com.noob.state.util.StateUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public abstract class AbstractService {
 
-    protected final BusinessStorage storage;
-    protected final LogService logService;
-    protected final MetaNode metaNode;
+	protected final BusinessStorage storage;
+	protected final LogService logService;
+	protected final MetaNode metaNode;
 
-    public AbstractService(LogService logService, MetaNode metaNode) {
-        this.logService = logService;
-        this.metaNode = metaNode;
-        this.storage = logService.getStorage();
-    }
+	public AbstractService(LogService logService, MetaNode metaNode) {
+		this.logService = logService;
+		this.metaNode = metaNode;
+		this.storage = logService.getStorage();
+	}
 
-    /**
-     * 更新节点数据
-     */
-    public void updateNode(String path, String value) {
-        storage.updateNode(path, false, value);
-    }
+	/**
+	 * 更新节点数据
+	 */
+	public void updateNode(String path, String value) {
+		storage.updateNode(path, false, value);
+	}
 
-    /**
-     * 更新节点数据
-     */
-    public void updateNodeWithFullPath(String path, String value, LogService.LogInfo logInfo) {
-        if (storage.updateNode(path, true, value)) updateLogData(path, logInfo);
-    }
+	/**
+	 * 更新节点数据
+	 */
+	public void updateNodeWithFullPath(String path, String value, LogService.LogInfo logInfo) {
+		if (storage.updateNode(path, true, value)) updateLogData(path, logInfo);
+	}
 
-    /**
-     * 初始化节点. 若节点不存在则用指定数据创建新节点,当指定数据不为空，还需要创建日志节点
-     */
-    public void initNode(String path, String data) {
-        if (!storage.isNodeExisted(path)) {
-            storage.createNodeIfNeeded(path, data, new BackgroundCallback() {
+	/**
+	 * 初始化节点. 若节点不存在则用指定数据创建新节点,当指定数据不为空，还需要创建日志节点
+	 */
+	public void initNode(String path, String data) {
+		if (!storage.isNodeExisted(path)) {
+			storage.createNodeIfNeeded(path, data, new BackgroundCallback() {
 
-                @Override
-                public void processResult(CuratorFramework client, CuratorEvent event)
-                        throws Exception {
-                    // 创建成功
-                    if (CuratorEventType.CREATE.equals(event.getType())
-                            && event.getResultCode() == 0) {
-                        log.info("register node success.  path:{}, data:{}", path, data);
-                        if (!Strings.isNullOrEmpty(data)) {
-                            updateLogData(storage.getFullPath(path), new LogService.LogInfo(
-                                    Date.from(Instant.now()), path,
-                                    TreeCacheEvent.Type.INITIALIZED.toString(),
-                                    String.format(Symbol.LOG_TEMPLETE, Symbol.EMPTY, data)));
-                        }
-                    }
-                }
-            });
+				@Override
+				public void processResult(CuratorFramework client, CuratorEvent event)
+						throws Exception {
+					// 创建成功
+					if (CuratorEventType.CREATE.equals(event.getType())
+							&& event.getResultCode() == 0) {
+						log.info("register node success.  path:{}, data:{}", path, data);
+						if (!Strings.isNullOrEmpty(data)) {
+							updateLogData(storage.getFullPath(path), new LogService.LogInfo(
+									Date.from(Instant.now()), path,
+									TreeCacheEvent.Type.INITIALIZED.toString(),
+									String.format(Symbol.LOG_TEMPLETE, Symbol.EMPTY, data)));
+						}
+					}
+				}
+			});
 
-        } else {
+		} else {
 
-        }
-    }
+		}
+	}
 
-    private void updateLogData(String path, LogService.LogInfo info) {
-        logService.merge(path, info);
-    }
+	private void updateLogData(String path, LogService.LogInfo info) {
+		logService.merge(path, info);
+	}
 
-    /**
-     * 增加新实例的本地缓存
-     *
-     * @param path       实例节点全路径
-     * @param metaConfig 配置节点数据
-     * @param map        节点本地缓存映射
-     * @param cls        指定类型
-     */
-    protected <T extends Meta> void register(String path, String metaConfig,
-                                             Map<String, Adapter<T>> map, Class<T> cls) {
-        if (Strings.isNullOrEmpty(metaConfig))
-            log.error("get node's meta data return null. path:{}", path);
-        else {
-            Object object = GsonUtil.fromJson(metaConfig, cls);
-            Adapter<T> adapter = new Adapter<T>((T) object);
-            List<Monitor> monitors =
-                    SateUtil.splitToMonitorList(storage.getDataForFullPath(path));
-            if (CommonUtil.notEmpty(monitors)) adapter.setMonitorList(monitors);
-            map.putIfAbsent(path, adapter);
-        }
+	/**
+	 * 增加新实例的本地缓存
+	 *
+	 * @param path
+	 *            实例节点全路径
+	 * @param metaConfig
+	 *            配置节点数据
+	 * @param map
+	 *            节点本地缓存映射
+	 * @param cls
+	 *            指定类型
+	 */
+	protected <T extends Meta> void register(String path, String metaConfig,
+			Map<String, Adapter<T>> map, Class<T> cls) {
+		if (Strings.isNullOrEmpty(metaConfig))
+			log.error("get node's meta data return null. path:{}", path);
+		else {
+			Object object = GsonUtil.fromJson(metaConfig, cls);
+			Adapter<T> adapter = new Adapter<T>((T) object);
+			List<Monitor> monitors =
+					StateUtil.splitToMonitorList(storage.getDataForFullPath(path));
+			if (CommonUtil.notEmpty(monitors)) adapter.setMonitorList(monitors);
+			map.putIfAbsent(path, adapter);
+		}
 
-    }
+	}
 
-    /**
-     * 依据上级节点的事件响应,更新下级节点实例的状态
-     *
-     * @param transferData 上级节点传递下来的状态信息
-     * @param path         需要处理的节点地址
-     * @param source       待处理的EventSource
-     * @param logInfo      日志信息
-     */
-    public void toggle(String transferData, String path, EventSource source,
-                       LogService.LogInfo logInfo) {
+	/**
+	 * 依据上级节点的事件响应,更新下级节点实例的状态
+	 *
+	 * @param transferData
+	 *            上级节点传递下来的状态信息
+	 * @param path
+	 *            需要处理的节点地址
+	 * @param source
+	 *            待处理的EventSource
+	 * @param logInfo
+	 *            日志信息
+	 */
+	public void toggle(String transferData, String path, EventSource source,
+			LogService.LogInfo logInfo) {
 
-        String localInfo = storage.getDataForFullPath(path);
-        String updateInfo = SateUtil.exchange(transferData, localInfo, source);
-        log.info("exchange data. node:{} localInfo:{}, transferInfo: {}, finalInfo: {}", path,
-                localInfo, transferData, updateInfo);
-        if (!localInfo.equals(updateInfo)) {
-            logInfo.setRemark(String.format(Symbol.LOG_TEMPLETE, localInfo, updateInfo));
-            updateNodeWithFullPath(path, updateInfo, logInfo);
-        }
+		String localInfo = storage.getDataForFullPath(path);
+		String updateInfo = StateUtil.exchange(transferData, localInfo, source);
+		log.info("exchange data. node:{} localInfo:{}, transferInfo: {}, finalInfo: {}", path,
+				localInfo, transferData, updateInfo);
+		if (!localInfo.equals(updateInfo)) {
+			logInfo.setRemark(String.format(Symbol.LOG_TEMPLETE, localInfo, updateInfo));
+			updateNodeWithFullPath(path, updateInfo, logInfo);
+		}
 
-    }
+	}
+
+	/**
+	 * 后台管理新增状态
+	 * 
+	 * @param fullPath
+	 *            地址
+	 * @param addMonitor
+	 *            要新增的监控状态
+	 * @param remark
+	 * 
+	 */
+	public void addMonitorForConsole(String fullPath, MonitorContainer addMonitor, String remark) {
+		LogService.LogInfo info =
+				new LogService.LogInfo(Date.from(Instant.now()), fullPath, remark);
+		String localInfo = storage.getDataForFullPath(fullPath);
+		String updateInfo = null;
+		if (Strings.isNullOrEmpty(localInfo)) {
+			updateInfo = addMonitor.getMonitor().toString();
+		} else if (!localInfo.contains(updateInfo)) {
+			updateInfo = StateUtil.addSingleMonitor(localInfo, addMonitor.getMonitor());
+		}
+		if (updateInfo != null) {
+			updateNodeWithFullPath(fullPath, updateInfo, info);
+		}
+	}
+
+	/**
+	 * 后台管理删除状态
+	 * 
+	 * @param fullPath
+	 *            地址
+	 * @param removeMonitor
+	 *            要删除的监控状态
+	 * @param remark
+	 */
+	public void removeMonitorForConsole(String fullPath, MonitorContainer removeMonitor,
+			String remark) {
+		LogService.LogInfo info =
+				new LogService.LogInfo(Date.from(Instant.now()), fullPath, remark);
+		String localInfo = storage.getDataForFullPath(fullPath);
+		String updateInfo = null;
+		if (!Strings.isNullOrEmpty(localInfo) && localInfo.contains(updateInfo)) {
+			updateInfo = StateUtil.removeSingleMonitor(localInfo, removeMonitor.getMonitor());
+		}
+		if (updateInfo != null) {
+			updateNodeWithFullPath(fullPath, updateInfo, info);
+		}
+	}
 
 }
