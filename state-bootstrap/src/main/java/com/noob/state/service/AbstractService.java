@@ -106,8 +106,7 @@ public abstract class AbstractService {
 		else {
 			Object object = GsonUtil.fromJson(metaConfig, cls);
 			Adapter<T> adapter = new Adapter<T>((T) object);
-			List<Monitor> monitors =
-					StateUtil.splitToMonitorList(storage.getDataForFullPath(path));
+			List<Monitor> monitors = StateUtil.splitToMonitorList(storage.getDataForFullPath(path));
 			if (CommonUtil.notEmpty(monitors)) adapter.setMonitorList(monitors);
 			map.putIfAbsent(path, adapter);
 		}
@@ -141,50 +140,41 @@ public abstract class AbstractService {
 	}
 
 	/**
-	 * 后台管理新增状态
+	 * 新增状态
 	 * 
-	 * @param fullPath
+	 * @param path
 	 *            地址
 	 * @param addMonitor
 	 *            要新增的监控状态
-	 * @param remark
+	 * @param eventType
 	 * 
 	 */
-	public void addMonitorForConsole(String fullPath, MonitorContainer addMonitor, String remark) {
-		LogService.LogInfo info =
-				new LogService.LogInfo(Date.from(Instant.now()), fullPath, remark);
-		String localInfo = storage.getDataForFullPath(fullPath);
-		String updateInfo = null;
-		if (Strings.isNullOrEmpty(localInfo)) {
-			updateInfo = addMonitor.getMonitor().toString();
-		} else if (!localInfo.contains(updateInfo)) {
-			updateInfo = StateUtil.addSingleMonitor(localInfo, addMonitor.getMonitor());
-		}
+	public void addSingleMonitor(String path, MonitorContainer addMonitor, String eventType) {
+		String localInfo = storage.getData(path);
+		String updateInfo = StateUtil.addSingleMonitor(localInfo, addMonitor.getMonitor());
 		if (updateInfo != null) {
-			updateNodeWithFullPath(fullPath, updateInfo, info);
+			updateNodeWithFullPath(storage.getFullPath(path), updateInfo,
+					new LogService.LogInfo(Date.from(Instant.now()), path, eventType,
+							String.format(Symbol.LOG_TEMPLETE, localInfo, updateInfo)));
 		}
 	}
 
 	/**
-	 * 后台管理删除状态
+	 * 删除状态
 	 * 
-	 * @param fullPath
+	 * @param path
 	 *            地址
 	 * @param removeMonitor
 	 *            要删除的监控状态
-	 * @param remark
+	 * @param eventType
 	 */
-	public void removeMonitorForConsole(String fullPath, MonitorContainer removeMonitor,
-			String remark) {
-		LogService.LogInfo info =
-				new LogService.LogInfo(Date.from(Instant.now()), fullPath, remark);
-		String localInfo = storage.getDataForFullPath(fullPath);
-		String updateInfo = null;
-		if (!Strings.isNullOrEmpty(localInfo) && localInfo.contains(updateInfo)) {
-			updateInfo = StateUtil.removeSingleMonitor(localInfo, removeMonitor.getMonitor());
-		}
+	public void removeSingleMonitor(String path, MonitorContainer removeMonitor, String eventType) {
+		String localInfo = storage.getData(path);
+		String updateInfo = StateUtil.removeSingleMonitor(localInfo, removeMonitor.getMonitor());
 		if (updateInfo != null) {
-			updateNodeWithFullPath(fullPath, updateInfo, info);
+			updateNodeWithFullPath(storage.getFullPath(path), updateInfo,
+					new LogService.LogInfo(Date.from(Instant.now()), path, eventType,
+							String.format(Symbol.LOG_TEMPLETE, localInfo, updateInfo)));
 		}
 	}
 
