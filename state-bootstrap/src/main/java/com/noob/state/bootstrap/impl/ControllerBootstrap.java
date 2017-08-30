@@ -31,8 +31,8 @@ public class ControllerBootstrap extends AbstractBootstrap {
 
 	@Override
 	protected void startListen() {
-		startTreeCacheListen(treePath, new ToggleListener(serviceManager));
-		startChildrenListen(childrenPath, new ServerChangeListener(serviceManager));
+		startTreeCacheListen(treePath, new ToggleListener(managerController));
+		startChildrenListen(childrenPath, new ServerChangeListener(managerController));
 	}
 
 }

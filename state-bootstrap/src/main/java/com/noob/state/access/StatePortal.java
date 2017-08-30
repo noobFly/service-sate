@@ -8,7 +8,7 @@ import com.noob.state.constants.Symbol;
 import com.noob.state.entity.Meta;
 import com.noob.state.entity.Provider;
 import com.noob.state.entity.adapter.Adapter;
-import com.noob.state.node.impl.ApiNode;
+import com.noob.state.node.impl.ServiceNode;
 import com.noob.state.node.impl.ProviderNode;
 import com.noob.state.util.CommonUtil;
 
@@ -35,51 +35,51 @@ public class StatePortal {
 	 * 禁用通道
 	 */
 	public void disabledProvider(String code, String logRemark) {
-		bootstrap.getProviderService().disabledProvider(code, logRemark);
+		bootstrap.getProviderManager().disabledProvider(code, logRemark);
 	}
 
 	/**
 	 * 启用通道
 	 */
 	public void enabledProvider(String code, String logRemark) {
-		bootstrap.getProviderService().enabledProvider(code, logRemark);
+		bootstrap.getProviderManager().enabledProvider(code, logRemark);
 	}
 
 	/**
 	 * 禁用服务
 	 */
-	public void disabledApi(String providerCode, String apiCode, String logRemark) {
-		bootstrap.getApiService().disabledApi(providerCode, apiCode, logRemark);
+	public void disabledService(String providerCode, String serviceCode, String logRemark) {
+		bootstrap.getServiceManager().disabledService(providerCode, serviceCode, logRemark);
 	}
 
 	/**
 	 * 启用服务
 	 */
-	public void enabledApi(String providerCode, String apiCode, String logRemark) {
-		bootstrap.getApiService().enabledApi(providerCode, apiCode, logRemark);
+	public void enabledService(String providerCode, String serviceCode, String logRemark) {
+		bootstrap.getServiceManager().enabledService(providerCode, serviceCode, logRemark);
 	}
 
 	/**
 	 * 判定提供者状态可用providerCode
 	 */
 	public boolean providerAlive(String code) {
-		return predicate(bootstrap.getProviderService().getProviderAdapters().get(ProviderNode.getInstancePath(code)));
+		return predicate(bootstrap.getProviderManager().getProviderAdapters().get(ProviderNode.getInstancePath(code)));
 	}
 
 	/**
-	 * 判定Api状态可用 (providerCode@-@apiCode)
+	 * 判定Service状态可用 (providerCode@-@serviceCode)
 	 */
-	public boolean apiPredicate(String code) {
+	public boolean servicePredicate(String code) {
 		List<String> list = Splitter.on(Symbol.DELIMITER).splitToList(code);
-		return list != null && list.size() == 2 && apiPredicate(list.get(0), list.get(1));
+		return list != null && list.size() == 2 && servicePredicate(list.get(0), list.get(1));
 	}
 
 	/**
-	 * 判定Api状态可用
+	 * 判定Service状态可用
 	 */
-	public boolean apiPredicate(String providerCode, String apiCode) {
+	public boolean servicePredicate(String providerCode, String serviceCode) {
 		return predicate(
-				bootstrap.getApiService().getServiceAdapters().get(ApiNode.getInstancePath(providerCode, apiCode)));
+				bootstrap.getServiceManager().getServiceAdapters().get(ServiceNode.getInstancePath(providerCode, serviceCode)));
 	}
 
 	private <T extends Meta> boolean predicate(Adapter<T> adapter) {

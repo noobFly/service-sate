@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @RequiredArgsConstructor
 @Slf4j
-public class LogService {
+public class LogManager {
 	private final LogNode logNode;
 	@Getter
 	private final BusinessStorage storage;

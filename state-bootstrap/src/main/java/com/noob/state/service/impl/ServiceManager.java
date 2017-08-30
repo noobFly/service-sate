@@ -7,28 +7,28 @@ import java.util.Map.Entry;
 import org.apache.curator.utils.ZKPaths;
 
 import com.google.common.collect.Multimap;
-import com.noob.state.entity.Api;
+import com.noob.state.entity.Service;
 import com.noob.state.entity.adapter.Adapter;
 import com.noob.state.monitor.MonitorFactory.EventSource;
 import com.noob.state.monitor.MonitorFactory.MonitorContainer;
-import com.noob.state.node.impl.ApiNode;
+import com.noob.state.node.impl.ServiceNode;
 import com.noob.state.node.impl.MetaNode;
-import com.noob.state.service.AbstractService;
+import com.noob.state.service.AbstractManager;
 import com.noob.state.util.CommonUtil;
 import com.noob.state.util.StateUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * 对应管理每一个通道提供的API节点
+ * 对应管理每一个通道提供的SERVICE节点
  */
 @Slf4j
-public class ApiService extends AbstractService {
+public class ServiceManager extends AbstractManager {
 
 	private final String SERVICE_CACHE_TOPIC = "更新每个服务实例本地缓存状态";
 	private final String SERVICE_TOPIC = "更新每个服务实例的状态";
 
-	public ApiService(LogService logService, MetaNode metaNode) {
+	public ServiceManager(LogManager logService, MetaNode metaNode) {
 		super(logService, metaNode);
 	}
 
@@ -36,8 +36,8 @@ public class ApiService extends AbstractService {
 		return storage.getRelationMap();
 	}
 
-	public Map<String, Adapter<Api>> getServiceAdapters() {
-		return storage.getApiMap();
+	public Map<String, Adapter<Service>> getServiceAdapters() {
+		return storage.getServiceMap();
 	}
 
 	/**
@@ -48,11 +48,11 @@ public class ApiService extends AbstractService {
 	}
 
 	/**
-	 * 判定 "/providers/${providerInstance}/apis/${serviceInstance}"
+	 * 判定 "/providers/${providerInstance}/services/${serviceInstance}"
 	 */
 	public boolean isServicePath(String path) {
 
-		return ApiNode.ROOT
+		return ServiceNode.ROOT
 				.equals(ZKPaths.getPathAndNode(ZKPaths.getPathAndNode(path).getPath()).getNode());
 	}
 
@@ -75,13 +75,13 @@ public class ApiService extends AbstractService {
 	 * @param info
 	 *            日志信息
 	 */
-	public void toggle(String path, String data, LogService.LogInfo info) {
+	public void toggle(String path, String data, LogManager.LogInfo info) {
 		log.info("{} begin.", SERVICE_TOPIC);
 		Entry<String, Collection<String>> entry = CommonUtil.getObjFromOptional(getRelationMap()
 				.asMap().entrySet().stream().filter(t -> t.getKey().equals(path)).findFirst());
 		if (entry != null) {
 			for (String relationPath : entry.getValue()) {
-				toggle(data, relationPath, EventSource.API_INSTANCE, info);
+				toggle(data, relationPath, EventSource.SERVICE_INSTANCE, info);
 			}
 		}
 	}
@@ -95,8 +95,8 @@ public class ApiService extends AbstractService {
 	 *            配置
 	 */
 	public void registerWithConfig(String path, String metaConfig) {
-		super.register(path, metaConfig, getServiceAdapters(), Api.class);
-		String providerPath = ApiNode.getProviderPath(path);
+		super.register(path, metaConfig, getServiceAdapters(), Service.class);
+		String providerPath = ServiceNode.getProviderPath(path);
 		if (storage.getProviderMap().get(providerPath) != null) {
 			getRelationMap().put(providerPath, path); // 当服务实例节点的上级提供者实例节点已经被注册时，保存两者的关系
 		}
@@ -107,29 +107,29 @@ public class ApiService extends AbstractService {
 	 * 
 	 * @param providerNode
 	 *            提供者节点
-	 * @param apiNode
+	 * @param serviceNode
 	 *            服务节点
 	 */
-	public void register(String providerNode, String apiNode) {
-		registerWithConfig(storage.getFullPath(ApiNode.getInstancePath(providerNode, apiNode)),
-				storage.getData(metaNode.getApiInstancePath(providerNode, apiNode)));
+	public void register(String providerNode, String serviceNode) {
+		registerWithConfig(storage.getFullPath(ServiceNode.getInstancePath(providerNode, serviceNode)),
+				storage.getData(metaNode.getServiceInstancePath(providerNode, serviceNode)));
 
 	}
 
 	/**
 	 * 禁用通道
 	 */
-	public void disabledApi(String providerCode, String apiCode, String logRemark) {
-		addMonitorForConsole(ApiNode.getInstancePath(providerCode, apiCode),
-				MonitorContainer.DIS_API_INSTANCE, logRemark);
+	public void disabledService(String providerCode, String serviceCode, String logRemark) {
+		addSingleMonitor(ServiceNode.getInstancePath(providerCode, serviceCode),
+				MonitorContainer.DIS_SERVICE_INSTANCE, logRemark);
 	}
 
 	/**
 	 * 启用通道
 	 */
-	public void enabledApi(String providerCode, String apiCode, String logRemark) {
-		removeMonitorForConsole(ApiNode.getInstancePath(providerCode, apiCode),
-				MonitorContainer.DIS_API_INSTANCE, logRemark);
+	public void enabledService(String providerCode, String serviceCode, String logRemark) {
+		removeSingleMonitor(ServiceNode.getInstancePath(providerCode, serviceCode),
+				MonitorContainer.DIS_SERVICE_INSTANCE, logRemark);
 	}
 
 }

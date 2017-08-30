@@ -6,10 +6,10 @@ import java.util.Date;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent.Type;
 
 import com.noob.state.listener.AbstractChildrenCacheListener;
-import com.noob.state.service.impl.LogService;
-import com.noob.state.service.impl.ProviderService;
-import com.noob.state.service.impl.ServerService;
-import com.noob.state.service.manager.ServiceManager;
+import com.noob.state.service.impl.LogManager;
+import com.noob.state.service.impl.ProviderManager;
+import com.noob.state.service.impl.ServerManager;
+import com.noob.state.service.manager.ManagerController;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,13 +20,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ServerChangeListener extends AbstractChildrenCacheListener {
 
-	private ServerService serverService;
+	private ServerManager serverService;
 
-	private ProviderService providerService;
+	private ProviderManager providerService;
 
-	public ServerChangeListener(ServiceManager serviceManager) {
-		this.serverService = serviceManager.getServerService();
-		this.providerService = serviceManager.getProviderService();
+	public ServerChangeListener(ManagerController managerController) {
+		this.serverService = managerController.getServerManager();
+		this.providerService = managerController.getProviderManager();
 	}
 
 	/**
@@ -38,7 +38,7 @@ public class ServerChangeListener extends AbstractChildrenCacheListener {
 
 		if (serverService.isServerPath(path)) {
 
-			LogService.LogInfo info = new LogService.LogInfo(Date.from(Instant.now()), path, type.toString());
+			LogManager.LogInfo info = new LogManager.LogInfo(Date.from(Instant.now()), path, type.toString());
 			if (Type.CHILD_REMOVED.equals(type) && !serverService.hasOnlineServer()) {
 				providerService.turnOffline(info);
 				return;

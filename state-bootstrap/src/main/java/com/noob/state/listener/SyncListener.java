@@ -3,7 +3,7 @@ package com.noob.state.listener;
 import org.apache.curator.framework.recipes.cache.TreeCacheEvent.Type;
 
 import com.noob.state.listener.AbstractTreeCacheListener;
-import com.noob.state.service.manager.ServiceManager;
+import com.noob.state.service.manager.ManagerController;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,18 +16,18 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class SyncListener extends AbstractTreeCacheListener {
 
-	private final ServiceManager serviceManager;
+	private final ManagerController managerController;
 
 	@Override
 	public void dataChanged(String path, Type type, String data) {
 		log.info("eventPath:{}, eventType:{}, data:{}.", path, type, data);
 		if (Type.NODE_ADDED.equals(type)) {
-			serviceManager.registerNew(path, data); // 针对meta节点
+			managerController.registerNew(path, data); // 针对meta节点
 			return;
 		}
 
 		if (Type.NODE_UPDATED.equals(type)) {
-			serviceManager.updateCache(path, data); // 针对实例节点
+			managerController.updateCache(path, data); // 针对实例节点
 		}
 	}
 

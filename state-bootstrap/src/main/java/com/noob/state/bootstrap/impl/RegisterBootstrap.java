@@ -5,12 +5,12 @@ import java.util.List;
 import com.google.common.base.Strings;
 import com.noob.state.bootstrap.AbstractBootstrap;
 import com.noob.state.constants.Symbol;
-import com.noob.state.entity.Api;
+import com.noob.state.entity.Service;
 import com.noob.state.entity.Provider;
 import com.noob.state.entity.adapter.Adapter;
 import com.noob.state.listener.SyncListener;
 import com.noob.state.monitor.Monitor;
-import com.noob.state.node.impl.ApiNode;
+import com.noob.state.node.impl.ServiceNode;
 import com.noob.state.node.impl.LogNode;
 import com.noob.state.node.impl.MetaNode;
 import com.noob.state.node.impl.ProviderNode;
@@ -57,7 +57,7 @@ public class RegisterBootstrap extends AbstractBootstrap {
 
     @Override
     protected void startListen() {
-        startTreeCacheListen(treePath, new SyncListener(serviceManager));
+        startTreeCacheListen(treePath, new SyncListener(managerController));
     }
 
     /**
@@ -79,27 +79,27 @@ public class RegisterBootstrap extends AbstractBootstrap {
                 String providerInstancePath = ProviderNode.getInstancePath(providerNode);
                 log.info("register provider_instance begin. path: 【{}】", providerInstancePath);
 
-                serviceManager.getProviderService().initNode(providerInstancePath, rootState);
+                managerController.getProviderManager().initNode(providerInstancePath, rootState);
                 storage.createNodeIfNeeded(logNode.getProviderInstancePath(providerNode));
 
                 storage.fillNode(metaNode.getProviderInstancePath(providerNode), provider.toJson());
 
                 Adapter<Provider> providerAdapter = providerMapping(storage, provider);
 
-                List<Api> apiList = provider.getApiList();
-                if (CommonUtil.notEmpty(apiList)) {
-                    for (Api api : apiList) {
-                        String apiNode = api.getNode();
-                        String apiInstancePath = ApiNode.getInstancePath(providerNode, apiNode);
-                        log.info("register api_instance begin. path: 【{}】", apiInstancePath);
+                List<Service> serviceList = provider.getServiceList();
+                if (CommonUtil.notEmpty(serviceList)) {
+                    for (Service service : serviceList) {
+                        String serviceNode = service.getNode();
+                        String serviceInstancePath = ServiceNode.getInstancePath(providerNode, serviceNode);
+                        log.info("register service_instance begin. path: 【{}】", serviceInstancePath);
 
-                        serviceManager.getApiService().initNode(apiInstancePath,
+                        managerController.getServiceManager().initNode(serviceInstancePath,
                                 StateUtil.join(providerAdapter.getMonitorList())); // 带上级监控状态创建实例
 
-                        storage.createNodeIfNeeded(logNode.getApiInstancePath(providerNode, apiNode));
-                        storage.fillNode(metaNode.getApiInstancePath(providerNode, apiNode), api.toJson());
+                        storage.createNodeIfNeeded(logNode.getServiceInstancePath(providerNode, serviceNode));
+                        storage.fillNode(metaNode.getServiceInstancePath(providerNode, serviceNode), service.toJson());
 
-                        apiMapping(storage, api, providerInstancePath, apiInstancePath);
+                        serviceMapping(storage, service, providerInstancePath, serviceInstancePath);
 
                     }
                 }
@@ -113,18 +113,18 @@ public class RegisterBootstrap extends AbstractBootstrap {
     /**
      * @param storage
      * @param providerInstancePath 提供者实例节点地址
-     * @param api                  服务实例对象
-     * @param apiInstancePath      服务实例节点地址
+     * @param service                  服务实例对象
+     * @param serviceInstancePath      服务实例节点地址
      */
-    private void apiMapping(BusinessStorage storage, Api api, String providerInstancePath, String apiInstancePath) {
-        Adapter<Api> apiAdapter = new Adapter<Api>(api);
-        List<Monitor> monitorList = generatorMonitor(storage, apiInstancePath); // "/providers/${providerInstance}/apis/${apiInstance}提供者实例"
+    private void serviceMapping(BusinessStorage storage, Service service, String providerInstancePath, String serviceInstancePath) {
+        Adapter<Service> serviceAdapter = new Adapter<Service>(service);
+        List<Monitor> monitorList = generatorMonitor(storage, serviceInstancePath); // "/providers/${providerInstance}/services/${serviceInstance}提供者实例"
         if (monitorList != null) {
-            apiAdapter.getMonitorList().addAll(monitorList);
+            serviceAdapter.getMonitorList().addAll(monitorList);
         }
 
-        storage.getApiMap().put(getFullPath(apiInstancePath), apiAdapter);
-        storage.getRelationMap().put(getFullPath(providerInstancePath), getFullPath(apiInstancePath));
+        storage.getServiceMap().put(getFullPath(serviceInstancePath), serviceAdapter);
+        storage.getRelationMap().put(getFullPath(providerInstancePath), getFullPath(serviceInstancePath));
     }
 
     /**

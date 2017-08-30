@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
  * 运行服务实例管理
  */
 @RequiredArgsConstructor
-public class ServerService {
+public class ServerManager {
 
     private final BusinessStorage storage;
 

@@ -3,12 +3,11 @@ package com.noob.state.storage;
 import java.util.Map;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
-import com.noob.state.entity.Api;
 import com.noob.state.entity.Provider;
+import com.noob.state.entity.Service;
 import com.noob.state.entity.adapter.Adapter;
 import com.noob.state.monitor.MonitorFactory.EventType;
 import com.noob.state.register.ICoordinatorRegistryCenter;
@@ -20,19 +19,20 @@ import lombok.Getter;
  * 带业务属性扩展
  */
 public class BusinessStorage extends NodeStorage {
+
 	/**
 	 * <providerFullPath, adapter> "/${root}/providers/${providerInstance}"
 	 */
 	@Getter
 	private final Map<String, Adapter<Provider>> providerMap = Maps.newHashMap();
 	/**
-	 * <apiFullPath, adapter>
-	 * "/${root}/providers/${providerInstance}/apis/${apiInstance}"
+	 * <serviceFullPath, adapter>
+	 * "/${root}/providers/${providerInstance}/services/${serviceInstance}"
 	 */
 	@Getter
-	private final Map<String, Adapter<Api>> apiMap = Maps.newHashMap();
+	private final Map<String, Adapter<Service>> serviceMap = Maps.newHashMap();
 	/**
-	 * <providerFullPath, apiFullPath>
+	 * <providerFullPath, serviceFullPath>
 	 */
 	@Getter
 	private final Multimap<String, String> relationMap = HashMultimap.create();
@@ -46,7 +46,8 @@ public class BusinessStorage extends NodeStorage {
 	 */
 	public boolean isAlive(String status) {
 		return !Strings.isNullOrEmpty(status) && !(EventType.OFF.toString().equals(status)
-				&& EventType.DISABLED.toString().equals(status) && EventType.LIMIT.toString().equals(status));
+				&& EventType.DISABLED.toString().equals(status)
+				&& EventType.LIMIT.toString().equals(status));
 	}
 
 }

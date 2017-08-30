@@ -19,7 +19,7 @@ import com.noob.state.monitor.Monitor;
 import com.noob.state.monitor.MonitorFactory.EventSource;
 import com.noob.state.monitor.MonitorFactory.MonitorContainer;
 import com.noob.state.node.impl.MetaNode;
-import com.noob.state.service.impl.LogService;
+import com.noob.state.service.impl.LogManager;
 import com.noob.state.storage.BusinessStorage;
 import com.noob.state.util.CommonUtil;
 import com.noob.state.util.GsonUtil;
@@ -28,13 +28,13 @@ import com.noob.state.util.StateUtil;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public abstract class AbstractService {
+public abstract class AbstractManager {
 
 	protected final BusinessStorage storage;
-	protected final LogService logService;
+	protected final LogManager logService;
 	protected final MetaNode metaNode;
 
-	public AbstractService(LogService logService, MetaNode metaNode) {
+	public AbstractManager(LogManager logService, MetaNode metaNode) {
 		this.logService = logService;
 		this.metaNode = metaNode;
 		this.storage = logService.getStorage();
@@ -50,7 +50,7 @@ public abstract class AbstractService {
 	/**
 	 * 更新节点数据
 	 */
-	public void updateNodeWithFullPath(String path, String value, LogService.LogInfo logInfo) {
+	public void updateNodeWithFullPath(String path, String value, LogManager.LogInfo logInfo) {
 		if (storage.updateNode(path, true, value)) updateLogData(path, logInfo);
 	}
 
@@ -69,7 +69,7 @@ public abstract class AbstractService {
 							&& event.getResultCode() == 0) {
 						log.info("register node success.  path:{}, data:{}", path, data);
 						if (!Strings.isNullOrEmpty(data)) {
-							updateLogData(storage.getFullPath(path), new LogService.LogInfo(
+							updateLogData(storage.getFullPath(path), new LogManager.LogInfo(
 									Date.from(Instant.now()), path,
 									TreeCacheEvent.Type.INITIALIZED.toString(),
 									String.format(Symbol.LOG_TEMPLETE, Symbol.EMPTY, data)));
@@ -83,7 +83,7 @@ public abstract class AbstractService {
 		}
 	}
 
-	private void updateLogData(String path, LogService.LogInfo info) {
+	private void updateLogData(String path, LogManager.LogInfo info) {
 		logService.merge(path, info);
 	}
 
@@ -126,7 +126,7 @@ public abstract class AbstractService {
 	 *            日志信息
 	 */
 	public void toggle(String transferData, String path, EventSource source,
-			LogService.LogInfo logInfo) {
+			LogManager.LogInfo logInfo) {
 
 		String localInfo = storage.getDataForFullPath(path);
 		String updateInfo = StateUtil.exchange(transferData, localInfo, source);
@@ -154,7 +154,7 @@ public abstract class AbstractService {
 		String updateInfo = StateUtil.addSingleMonitor(localInfo, addMonitor.getMonitor());
 		if (updateInfo != null) {
 			updateNodeWithFullPath(storage.getFullPath(path), updateInfo,
-					new LogService.LogInfo(Date.from(Instant.now()), path, eventType,
+					new LogManager.LogInfo(Date.from(Instant.now()), path, eventType,
 							String.format(Symbol.LOG_TEMPLETE, localInfo, updateInfo)));
 		}
 	}
@@ -173,7 +173,7 @@ public abstract class AbstractService {
 		String updateInfo = StateUtil.removeSingleMonitor(localInfo, removeMonitor.getMonitor());
 		if (updateInfo != null) {
 			updateNodeWithFullPath(storage.getFullPath(path), updateInfo,
-					new LogService.LogInfo(Date.from(Instant.now()), path, eventType,
+					new LogManager.LogInfo(Date.from(Instant.now()), path, eventType,
 							String.format(Symbol.LOG_TEMPLETE, localInfo, updateInfo)));
 		}
 	}

@@ -60,7 +60,7 @@ public interface MonitorFactory {
 		/**
 		 * 单个提供方下的所有服务
 		 */
-		API_INSTANCE(4);
+		SERVICE_INSTANCE(4);
 
 		private int level;
 
@@ -110,19 +110,19 @@ public interface MonitorFactory {
 		/**
 		 * 限制单个服务实例
 		 */
-		LIMIT_API_INSTANCE(bulider(EventType.LIMIT, EventSource.API_INSTANCE), true),
+		LIMIT_SERVICE_INSTANCE(bulider(EventType.LIMIT, EventSource.SERVICE_INSTANCE), true),
 		/**
 		 * 解除限制单个服务实例
 		 */
-		RELEASE_API_INSTANCE(bulider(EventType.RELEASE, EventSource.API_INSTANCE), false),
+		RELEASE_SERVICE_INSTANCE(bulider(EventType.RELEASE, EventSource.SERVICE_INSTANCE), false),
 		/**
 		 * 启用单个服务实例
 		 */
-		EN_API_INSTANCE(bulider(EventType.ENABLED, EventSource.API_INSTANCE), false),
+		EN_SERVICE_INSTANCE(bulider(EventType.ENABLED, EventSource.SERVICE_INSTANCE), false),
 		/**
 		 * 停用单个服务实例
 		 */
-		DIS_API_INSTANCE(bulider(EventType.DISABLED, EventSource.API_INSTANCE), true);
+		DIS_SERVICE_INSTANCE(bulider(EventType.DISABLED, EventSource.SERVICE_INSTANCE), true);
 
 		private Monitor monitor;
 		/**

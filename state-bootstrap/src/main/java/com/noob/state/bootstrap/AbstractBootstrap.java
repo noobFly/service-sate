@@ -7,14 +7,14 @@ import com.noob.state.entity.Provider;
 import com.noob.state.entity.adapter.Adapter;
 import com.noob.state.listener.AbstractChildrenCacheListener;
 import com.noob.state.listener.AbstractTreeCacheListener;
-import com.noob.state.node.impl.ApiNode;
 import com.noob.state.node.impl.ProviderNode;
+import com.noob.state.node.impl.ServiceNode;
 import com.noob.state.register.impl.ZookeeperConfiguration;
 import com.noob.state.register.impl.ZookeeperRegistryCenter;
-import com.noob.state.service.impl.ApiService;
-import com.noob.state.service.impl.ProviderService;
-import com.noob.state.service.impl.ServerService;
-import com.noob.state.service.manager.ServiceManager;
+import com.noob.state.service.impl.ProviderManager;
+import com.noob.state.service.impl.ServerManager;
+import com.noob.state.service.impl.ServiceManager;
+import com.noob.state.service.manager.ManagerController;
 import com.noob.state.storage.BusinessStorage;
 import com.noob.state.util.CommonUtil;
 import com.noob.state.util.GsonUtil;
@@ -36,14 +36,14 @@ public abstract class AbstractBootstrap {
 	protected final String treePath = ProviderNode.ROOT; // 需要监控树的根节点
 
 	protected BusinessStorage storage;
-	protected ServiceManager serviceManager;
+	protected ManagerController managerController;
 
 	/**
 	 * 初始化
 	 */
 	public void init() {
 		storage = new BusinessStorage(initZookeeper(), root);
-		serviceManager = new ServiceManager(storage);
+		managerController = new ManagerController(storage);
 		initCache();
 		beforeListen();
 		startListen();
@@ -101,12 +101,12 @@ public abstract class AbstractBootstrap {
 		List<String> providerNodeList = storage.getNodeChildrenKeys(treePath); // 提供者
 		if (CommonUtil.notEmpty(providerNodeList)) {
 			for (String providerNode : providerNodeList) {
-				serviceManager.getProviderService().register(providerNode);
-				List<String> apiNodeList =
-						storage.getNodeChildrenKeys(ApiNode.getRootPath(providerNode)); // api
-				if (CommonUtil.notEmpty(apiNodeList)) {
-					for (String apiNode : apiNodeList) {
-						serviceManager.getApiService().register(providerNode, apiNode);
+				managerController.getProviderManager().register(providerNode);
+				List<String> serviceNodeList =
+						storage.getNodeChildrenKeys(ServiceNode.getRootPath(providerNode)); // service
+				if (CommonUtil.notEmpty(serviceNodeList)) {
+					for (String serviceNode : serviceNodeList) {
+						managerController.getServiceManager().register(providerNode, serviceNode);
 					}
 				}
 
@@ -131,16 +131,16 @@ public abstract class AbstractBootstrap {
 		storage.addChildrenCache(path);
 	}
 
-	public ProviderService getProviderService() {
-		return serviceManager.getProviderService();
+	public ProviderManager getProviderManager() {
+		return managerController.getProviderManager();
 	}
 
-	public ApiService getApiService() {
-		return serviceManager.getApiService();
+	public ServiceManager getServiceManager() {
+		return managerController.getServiceManager();
 	}
 
-	public ServerService getServerService() {
-		return serviceManager.getServerService();
+	public ServerManager getServerManager() {
+		return managerController.getServerManager();
 	}
 
 	/**

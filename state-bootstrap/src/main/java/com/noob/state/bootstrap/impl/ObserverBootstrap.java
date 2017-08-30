@@ -23,7 +23,7 @@ public class ObserverBootstrap extends AbstractBootstrap {
 	 * 注册监听
 	 */
 	protected void startListen() {
-		startTreeCacheListen(treePath, new SyncListener(serviceManager));
+		startTreeCacheListen(treePath, new SyncListener(managerController));
 	}
 
 	@Override

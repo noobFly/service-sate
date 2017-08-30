@@ -2,7 +2,7 @@ package com.noob.state.node;
 
 import org.apache.curator.utils.ZKPaths;
 
-import com.noob.state.node.impl.ApiNode;
+import com.noob.state.node.impl.ServiceNode;
 import com.noob.state.node.impl.ProviderNode;
 
 /**
@@ -11,7 +11,7 @@ import com.noob.state.node.impl.ProviderNode;
 public abstract class AbstractLeafNode {
 
 	public String PROVIDER = String.join(ZKPaths.PATH_SEPARATOR, ProviderNode.PROVIDER, getRoot());
-	public String API = String.join(ZKPaths.PATH_SEPARATOR, ApiNode.API, getRoot());
+	public String SERVICE = String.join(ZKPaths.PATH_SEPARATOR, ServiceNode.SERVICE, getRoot());
 
 	/**
 	 * "providers/${node}/${getRoot()}"
@@ -21,10 +21,10 @@ public abstract class AbstractLeafNode {
 	}
 
 	/**
-	 * "providers/${providerNode}/apis/${apiNode}/${getRoot()}"
+	 * "providers/${providerNode}/services/${serviceNode}/${getRoot()}"
 	 */
-	public String getApiInstancePath(String providerNode, String apiNode) {
-		return String.format(API, providerNode, apiNode);
+	public String getServiceInstancePath(String providerNode, String serviceNode) {
+		return String.format(SERVICE, providerNode, serviceNode);
 	}
 
 	public abstract String getRoot() ;

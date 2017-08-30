@@ -7,12 +7,12 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class Api extends Meta {
+public class Service extends Meta {
 
 	private String type;
 	private String providerCode;
 
-	public Api(String id, String code, String type, String name, String remark, String providerCode) {
+	public Service(String id, String code, String type, String name, String remark, String providerCode) {
 		super(id, code, name, remark);
 		this.type = type;
 		this.providerCode = providerCode;

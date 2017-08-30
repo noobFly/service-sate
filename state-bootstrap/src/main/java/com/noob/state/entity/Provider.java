@@ -8,11 +8,11 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Provider extends Meta {
-	private List<Api> apiList;
+	private List<Service> serviceList;
 
-	public Provider(String id, String code, String name, String remark, List<Api> apiList) {
+	public Provider(String id, String code, String name, String remark, List<Service> serviceList) {
 		super(id, code, name, remark);
-		this.apiList = apiList;
+		this.serviceList = serviceList;
 	}
 
 }

@@ -12,7 +12,7 @@ import com.noob.state.monitor.MonitorFactory.EventSource;
 import com.noob.state.monitor.MonitorFactory.MonitorContainer;
 import com.noob.state.node.impl.MetaNode;
 import com.noob.state.node.impl.ProviderNode;
-import com.noob.state.service.AbstractService;
+import com.noob.state.service.AbstractManager;
 import com.noob.state.util.StateUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -21,12 +21,12 @@ import lombok.extern.slf4j.Slf4j;
  * 提供者节点管理服务
  */
 @Slf4j
-public class ProviderService extends AbstractService {
+public class ProviderManager extends AbstractManager {
 
 	private final String PROVIDER_CACHE_TOPIC = "更新每个提供者实例本地缓存状态";
 	private final String PROVIDER_TOPIC = "更新每个服务实例的状态";
 
-	public ProviderService(LogService logService, MetaNode metaNode) {
+	public ProviderManager(LogManager logService, MetaNode metaNode) {
 		super(logService, metaNode);
 	}
 
@@ -51,7 +51,7 @@ public class ProviderService extends AbstractService {
 	 * @param logInfo
 	 *            日志信息
 	 */
-	public void toggle(String data, LogService.LogInfo logInfo) {
+	public void toggle(String data, LogManager.LogInfo logInfo) {
 		log.info("{} begin.", PROVIDER_TOPIC);
 		for (String path : getProviderAdapters().keySet()) {
 			toggle(data, path, EventSource.PROVIDER_INSTANCE, logInfo);
@@ -94,7 +94,7 @@ public class ProviderService extends AbstractService {
 	/**
 	 * 下线
 	 */
-	public void turnOffline(LogService.LogInfo log) {
+	public void turnOffline(LogManager.LogInfo log) {
 		String remoteData = getRootRemoteData();
 		updateNodeData(remoteData,
 				StateUtil.addSingleMonitor(remoteData, MonitorContainer.OFF_SERVER.getMonitor()),
@@ -105,7 +105,7 @@ public class ProviderService extends AbstractService {
 	/**
 	 * 上线
 	 */
-	public void turnOnline(LogService.LogInfo log) {
+	public void turnOnline(LogManager.LogInfo log) {
 		String remoteData = getRootRemoteData();
 		updateNodeData(remoteData,
 				StateUtil.removeSingleMonitor(remoteData, MonitorContainer.OFF_SERVER.getMonitor()),
@@ -141,15 +141,15 @@ public class ProviderService extends AbstractService {
 	 * 禁用通道
 	 */
 	public void disabledProvider(String code, String logRemark) {
-		addMonitorForConsole(ProviderNode.getInstancePath(code),
-				MonitorContainer.DIS_PROVIDER_INSTANCE, logRemark);
+		addSingleMonitor(ProviderNode.getInstancePath(code), MonitorContainer.DIS_PROVIDER_INSTANCE,
+				logRemark);
 	}
 
 	/**
 	 * 启用通道
 	 */
 	public void enabledProvider(String code, String logRemark) {
-		removeMonitorForConsole(ProviderNode.getInstancePath(code),
+		removeSingleMonitor(ProviderNode.getInstancePath(code),
 				MonitorContainer.DIS_PROVIDER_INSTANCE, logRemark);
 	}
 
@@ -170,7 +170,7 @@ public class ProviderService extends AbstractService {
 	 * @param log
 	 *            日志记录
 	 */
-	private void updateNodeData(String originData, String updateData, LogService.LogInfo log) {
+	private void updateNodeData(String originData, String updateData, LogManager.LogInfo log) {
 		if (updateData != null && storage.updateNode(ProviderNode.ROOT, false, updateData)) {
 			log.setRemark(String.format(Symbol.LOG_TEMPLETE, originData, updateData));
 			logService.merge(storage.getFullPath(Symbol.EMPTY), log);
