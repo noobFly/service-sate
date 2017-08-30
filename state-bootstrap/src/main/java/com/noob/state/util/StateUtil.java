@@ -107,8 +107,8 @@ public class StateUtil {
 	public static List<Monitor> splitToMonitorList(String info) {
 		List<String> infoList = split(info);
 
-		return CommonUtil.notEmpty(infoList) ? infoList.stream().map(StateUtil::convert)
-				.distinct().filter(t -> t != null).collect(Collectors.toList()) : null;
+		return CommonUtil.notEmpty(infoList) ? infoList.stream().map(StateUtil::convert).distinct()
+				.filter(t -> t != null).collect(Collectors.toList()) : null;
 	}
 
 	private static Monitor convert(String info) {
@@ -122,8 +122,8 @@ public class StateUtil {
 	 */
 	public static String addSingleMonitor(String localInfo, Monitor monitor) {
 		return Strings.isNullOrEmpty(localInfo) ? monitor.toString()
-				: (localInfo.contains(monitor.toString())
-						? String.join(Symbol.SEMICOLON, localInfo, monitor.toString()) : null);
+				: localInfo.contains(monitor.toString()) ? null
+						: String.join(Symbol.SEMICOLON, localInfo, monitor.toString());
 	}
 
 	/**
@@ -141,7 +141,7 @@ public class StateUtil {
 			remove = true;
 		}
 
-		return !remove ? null : String.join(Symbol.SEMICOLON, localList);
+		return remove ? String.join(Symbol.SEMICOLON, localList) : null;
 
 	}
 
