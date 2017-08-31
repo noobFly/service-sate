@@ -63,7 +63,8 @@ public class StatePortal {
 	 * 判定提供者状态可用providerCode
 	 */
 	public boolean providerAlive(String code) {
-		return predicate(bootstrap.getProviderManager().getProviderAdapters().get(ProviderNode.getInstancePath(code)));
+		return predicate(bootstrap.getProviderManager().getProviderAdapters()
+				.get(bootstrap.getFullPath(ProviderNode.getInstancePath(code))));
 	}
 
 	/**
@@ -78,8 +79,8 @@ public class StatePortal {
 	 * 判定Service状态可用
 	 */
 	public boolean servicePredicate(String providerCode, String serviceCode) {
-		return predicate(
-				bootstrap.getServiceManager().getServiceAdapters().get(ServiceNode.getInstancePath(providerCode, serviceCode)));
+		return predicate(bootstrap.getServiceManager().getServiceAdapters().get(
+				bootstrap.getFullPath(ServiceNode.getInstancePath(providerCode, serviceCode))));
 	}
 
 	private <T extends Meta> boolean predicate(Adapter<T> adapter) {
