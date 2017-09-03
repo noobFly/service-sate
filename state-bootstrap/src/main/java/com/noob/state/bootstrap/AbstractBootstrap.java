@@ -49,16 +49,22 @@ public abstract class AbstractBootstrap {
 		startListen();
 		afterListen();
 
-		log.info("init finish. storage:{}", GsonUtil.toJson(storage));
+		// log.info("init finish. storage:{}", GsonUtil.toJson(storage));
 
-		/*while (true) {
-			log.info("init finish. storage:{}", GsonUtil.toJson(storage));
-			try {
-				Thread.sleep(10000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+		Thread infoThread = new Thread(()->{
+			while (true) {
+				log.info("init finish. storage:{}", GsonUtil.toJson(storage));
+				try {
+					Thread.sleep(10000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
-		}*/
+		});
+		infoThread.setDaemon(true);
+		infoThread.start();
+
+
 	}
 
 	/**

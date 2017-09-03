@@ -1,7 +1,5 @@
 package com.noob.state.entity;
 
-import com.noob.state.constants.Symbol;
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,18 +7,12 @@ import lombok.Setter;
 @Setter
 public class Service extends Meta {
 
-	private String type;
-	private String providerCode;
+    private String providerCode;
 
-	public Service(String id, String code, String type, String name, String remark, String providerCode) {
-		super(id, code, name, remark);
-		this.type = type;
-		this.providerCode = providerCode;
+    public Service(String code, String name,  String providerCode) {
+        super(code, name);
+        this.providerCode = providerCode;
 
-	}
-
-	public String getNode() {
-		return String.join(Symbol.MIDDLE_LINE, super.getNode(), this.getType());
-	}
+    }
 
 }
